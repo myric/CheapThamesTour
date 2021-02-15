@@ -6,7 +6,7 @@ Serial myPort;  // Create object from Serial class
 String val;
 String delim = "[, ]";
 String[] tokens;
-int[] values = new int[3];
+int[] values = new int[6];
 
 int view = 1;
 
@@ -48,6 +48,9 @@ void setup() {
   }
 }
 
+// Serial line:
+// X,Y,Z,R,G,S: 1878, 1859, 1, 0, 0, 0
+
 void draw() {
   //background(pics[view]);
   imageMode(CORNER);
@@ -61,20 +64,23 @@ void draw() {
   System.out.println(val);
   
   if (val != null && val.length() > 7) {    //parse Serial line into tokens
-    tokens = val.substring(7).split(delim);
-    if(tokens.length == 3) {
+    tokens = val.substring(13).split(delim); //starts parsing after colon+space
+    if(tokens.length == 6) {
       for(int i = 0; i < tokens.length; i++) {
         tokens[i] = trim(tokens[i]);
         values[i] = Integer.parseInt(tokens[i]);
       }
-    }
+      
+      // this block depends on values[] having valid data
+      if(values[1] > 1900) {    //go forward or backward depending on joystick
+        view += 2;  //not quite right bc need to check orientation
+      } else if(values[1] < 1700) {
+        view -= 2;
+      }
+    } 
   } 
   
-  if(values[1] > 1900) {    //go forward or backward depending on joystick
-    view += 2;  //not quite right bc need to check orientation
-  } else if(values[1] < 1700) {
-    view -= 2;
-  }
+  
   
   delay(75);
   correctView();
