@@ -32,7 +32,8 @@ void loop() {
   green = (digitalRead(green_button) == LOW) ? 1 : 0;
   switcher = (digitalRead(spst) == LOW) ? 1 : 0;
   
-  Serial.printf("X,Y,Z,R,G,S: %d, %d, %d, %d, %d, %d\n", xVal, yVal,
+  Serial.printf("X,Y,Z,R,G,S: %d,\t%d,\t%d,\t%d,\t%d,\t%d\n", xVal, yVal,
   zVal, red, green, switcher);
 
+  delay(100);
 }
