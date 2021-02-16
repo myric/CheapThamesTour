@@ -13,15 +13,15 @@ int orientation = 1;
 boolean redStateChange = true;
 int loopIterations = 0;
 
-PImage pics[] = new PImage[numPics];
+PImage pics[] = new PImage[numPics+1];
 StringBuilder base;
 String ending = ".jpg";
 
 void correctView() {
   if(view <= 0) {
-    view = 1;
-  } else if(view >= numPics) {
-    view = numPics-1;
+    view = (orientation > 0) ? 1 : 2;
+  } else if(view > numPics) {
+    view = (orientation > 0) ? (numPics-1) : numPics;
   }
 }
 
@@ -59,7 +59,7 @@ void setup() {
   
   myPort = new Serial(this, portName, 115200);
   
-  for(int i = 1; i < pics.length; i++) {
+  for(int i = 1; i < pics.length; i++) { // Using indices 1-52 
     base  = new StringBuilder("../TestOutput/00");
     
     if(i < 10) {
