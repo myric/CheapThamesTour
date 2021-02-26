@@ -9,6 +9,7 @@ String[] tokens;
 int[] values = new int[6];
 
 int view = 1;
+int oldview = 1;
 int orientation = 1; //1 forward / downriver; -1 backward
 boolean redStateChange = true;
 int loopIterations = 0;
@@ -19,7 +20,7 @@ String ending = ".jpg";
 
 PImage boat;
 PImage aliens;
-int lx, ly, rx, ry, alienChance;
+int lx, ly, rx, ry, alienChance, alienON;
 
 
 //HELPER FUNCTIONS--------------------------
@@ -84,10 +85,10 @@ void showAliens(int side) {
  
   pushMatrix();
   
-  if(side > 0) {
+  if(side == 1) {
     translate(lx, ly);
     rotate(-PI/24);
-  } else {
+  } else if(side == 2) {
     translate(rx, ry);
     rotate(PI/24.0);
   }
@@ -130,6 +131,7 @@ void setup() {
   ly = 95;
   rx = 942;
   ry = 95;
+  alienON = 0;
 }
 
 // Serial line:
@@ -150,12 +152,22 @@ void draw() {
   }
   
   //OK this is horrible -> needs to roll dice only on each view change
-  alienChance = int(random(15));
-  if(alienChance == 7) {
-    showAliens(1);
-  } else if(alienChance == 15) {
-    showAliens(0);
+  if(oldview != view) {
+    alienChance = int(random(15));
+    if(alienChance == 7) {
+      alienON = 1;
+    } else if(alienChance > 9) {
+      alienON = 2;
+    } else {
+      alienON = 0;
+    }
   }
+  
+  if(alienON > 0) {
+    showAliens(alienON);
+  }
+  
+  oldview = view;
   
   //READING FROM PORT----------------------------------
   if ( myPort.available() > 0) {  // If data is available,
