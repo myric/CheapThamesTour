@@ -85,10 +85,10 @@ void showAliens(int side) {
  
   pushMatrix();
   
-  if(side == 1) {
+  if(side == 3) {
     translate(lx, ly);
     rotate(-PI/24);
-  } else if(side == 2) {
+  } else if(side == 4) {
     translate(rx, ry);
     rotate(PI/24.0);
   }
@@ -131,7 +131,7 @@ void setup() {
   ly = 95;
   rx = 942;
   ry = 95;
-  alienON = 0;
+  //alienON = 0;
 }
 
 // Serial line:
@@ -151,20 +151,19 @@ void draw() {
     sternLight();
   }
   
-  //OK this is horrible -> needs to roll dice only on each view change
   if(oldview != view) {
-    alienChance = int(random(15));
-    if(alienChance == 7) {
-      alienON = 1;
-    } else if(alienChance > 9) {
-      alienON = 2;
-    } else {
-      alienON = 0;
-    }
+    alienChance = int(random(5));
+    //if(alienChance == 7) {
+    //  alienON = 1;
+    //} else if(alienChance > 9) {
+    //  alienON = 2;
+    //} else {
+    //  alienON = 0;
+    //}
   }
   
-  if(alienON > 0) {
-    showAliens(alienON);
+  if(alienChance >= 3) {
+    showAliens(alienChance);
   }
   
   oldview = view;
