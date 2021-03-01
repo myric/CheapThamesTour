@@ -12,6 +12,7 @@ int view = 1;
 int oldview = 1;
 int orientation = 1; //1 forward / downriver; -1 backward
 boolean redStateChange = true;
+boolean greenStateChange = true;
 int loopIterations = 0;
 
 PImage pics[] = new PImage[numPics+1];
@@ -19,8 +20,11 @@ StringBuilder base;
 String ending = ".jpg";
 
 PImage boat;
+boolean ignition;
 PImage aliens;
-int lx, ly, rx, ry, alienChance, alienON;
+boolean invasion = false;
+int lx, ly, rx, ry, alienChance, alienODDS;
+int side, internal; // settings for aliens display
 
 
 //HELPER FUNCTIONS--------------------------
@@ -81,21 +85,25 @@ void glowingAlt(float x, float y, float w, float h, float start, float stop, col
   arc(x, y, w, h, start, stop);
 }
 
-void showAliens(int side) {
- 
+void showAliens() {
+  
+  if(internal != alienODDS) {
+    side = int(random(2)); //select a side they show on
+    internal = alienODDS;
+  }
+  
   pushMatrix();
   
-  if(side == 3) {
+  if(side == 0) {
     translate(lx, ly);
     rotate(-PI/24);
-  } else if(side == 4) {
+  } else if(side == 1) {
     translate(rx, ry);
     rotate(PI/24.0);
   }
   
   image(aliens, 0, 0, aliens.width/2, aliens.height/2); 
   popMatrix();
-  
 }
 
 //BEGIN PROCESSING SCRIPT----------------------------
@@ -107,6 +115,7 @@ void setup() {
   // On Windows machines, this generally opens COM1.
   // Open whatever port is the one you're using.
   String portName = Serial.list()[2]; //usually 4
+  //String portName = Serial.list()[5];
   
   myPort = new Serial(this, portName, 115200);
   
@@ -126,12 +135,14 @@ void setup() {
   
   boat = loadImage("../Assets/Extras/bowTransparentTest.png");
   boat.resize(1220,600);
+  ignition = false;
   aliens = loadImage("../Assets/Extras/aliens.png");
   lx = -40;
   ly = 95;
   rx = 942;
   ry = 95;
-  //alienON = 0;
+  alienODDS = 20;
+  internal = alienODDS;
 }
 
 // Serial line:
@@ -145,25 +156,25 @@ void draw() {
   imageMode(CORNER);
   image(pics[view],0,0);
   image(boat, 0, 25);
-  if(orientation > 0) {
-    bowLight();
-  } else {
-    sternLight();
+  if(ignition) {
+    if(orientation > 0) {
+      bowLight();
+    } else {
+      sternLight();
+    }
   }
   
   if(oldview != view) {
-    alienChance = int(random(5));
-    //if(alienChance == 7) {
-    //  alienON = 1;
-    //} else if(alienChance > 9) {
-    //  alienON = 2;
-    //} else {
-    //  alienON = 0;
-    //}
+    alienChance = int(random(20));
+    if(!invasion && (alienODDS < 20)) { //increases or decreases odds
+      alienODDS++;
+    } else if(invasion && (alienODDS > 0)) { //if invasion is ongoing
+      alienODDS--;
+    }
   }
   
-  if(alienChance >= 3) {
-    showAliens(alienChance);
+  if(alienChance >= alienODDS) {
+    showAliens();
   }
   
   oldview = view;
@@ -188,26 +199,44 @@ void draw() {
       //prettyPrint(values); // For testing
       prettyPrint(view, orientation, redStateChange);
       
-      // Red button reverses view and orientation
-      if((redStateChange == true) && (values[3] == 1)) {
-        orientation *= -1; // earlier error from +=
-        redStateChange = false;
-        if((view % 2) == 0) {
-          view -= 1;
-        } else {
-          view += 1;
-        }
-      } else if((redStateChange == false) && (values[3] == 0)) {
-        redStateChange = true;
-      }
+      ignition = (values[5] == 1) ? true : false;
       
-      // this block depends on values[] having valid data
-      // A HACK
-      if((loopIterations % 30) == 0) {
-        if(values[1] > 1900) {    //go forward or backward depending on joystick
-          view += (2 * orientation);  //not quite right bc need to check orientation
-        } else if(values[1] < 1700) {
-          view -= (2 * orientation);
+      if(ignition) {  //boat mechanics work if ignition is on
+        
+        // Red button reverses view and orientation
+        if((redStateChange == true) && (values[3] == 1)) {
+          orientation *= -1; // earlier error from +=
+          redStateChange = false;
+          if((view % 2) == 0) {
+            view -= 1;
+          } else {
+            view += 1;
+          }
+        } else if((redStateChange == false) && (values[3] == 0)) {
+          redStateChange = true;
+        }
+        
+        // Green button opens pandoras box
+        // invasion=true makes chance of aliens steadily increase
+        // when invasion=false, aliens decrease and go away
+        if((greenStateChange == true) && (values[4] == 1)) {
+          invasion = (invasion) ? false : true;
+          greenStateChange = false;
+        } else if((greenStateChange == false) && (values[4] == 0)) {
+          greenStateChange = true;
+        }
+        
+        // this block depends on values[] having valid data
+        // A HACK - this decreases responsiveness to joystick
+        // I don't remember how I chose this number
+        // Might want to make more responsive for the PI, since 
+        // it seems to run slower than the laptop
+        if((loopIterations % 30) == 0) {
+          if(values[1] > 1900) {    //go forward or backward depending on joystick
+            view += (2 * orientation);  //not quite right bc need to check orientation
+          } else if(values[1] < 1700) {
+            view -= (2 * orientation);
+          }
         }
       }
     } 
