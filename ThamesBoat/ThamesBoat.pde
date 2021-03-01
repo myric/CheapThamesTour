@@ -114,7 +114,7 @@ void setup() {
   // is always my  FTDI adaptor, so I open Serial.list()[0].
   // On Windows machines, this generally opens COM1.
   // Open whatever port is the one you're using.
-  String portName = Serial.list()[2]; //usually 4
+  String portName = Serial.list()[4]; //usually 4
   //String portName = Serial.list()[5];
   
   myPort = new Serial(this, portName, 115200);
@@ -231,7 +231,7 @@ void draw() {
         // I don't remember how I chose this number
         // Might want to make more responsive for the PI, since 
         // it seems to run slower than the laptop
-        if((loopIterations % 30) == 0) {
+        if((loopIterations % 20) == 0) { //switching to 20 for pi
           if(values[1] > 1900) {    //go forward or backward depending on joystick
             view += (2 * orientation);  //not quite right bc need to check orientation
           } else if(values[1] < 1700) {

@@ -43,5 +43,5 @@ void loop() {
   Serial.printf("X,Y,Z,R,G,S: %d,\t%d,\t%d,\t%d,\t%d,\t%d\n", xVal, yVal,
   zVal, red, green, switcher);
 
-  delay(100);
+  delay(300);
 }
