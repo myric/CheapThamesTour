@@ -18,8 +18,13 @@ This repo contains code for both an ESP32 and for the Processing sketch. The ESP
 
 The repo also contains the source images in the Assets folder: this contains 52 images, screencapped from Google Maps Street View showing for and aft views at 26 locations along the river. Additionally, there is a transparent cutout of a boat's bow and another of a flying saucer complete with mysterious beam.
 
-The Processing script loads the images into an array (this takes a few moments on a laptop and quite a bit more on the Raspberry Pi). It displays starting at 1 and overlays with the bow. When the boat is "turned on", the script draws glowing bow lights or stern lights depening on orientation.
+The Processing script loads the images into an array (this takes a few moments on a laptop and quite a bit more on the Raspberry Pi). It displays starting at 1 and overlays with the bow. When the boat is "turned on", the script draws glowing bow lights or stern lights depending on orientation.
 
 # Replication
 
 Other than the wiring diagrams, all that would be needed would be to ascertain the serial port your machine is reading from. Something more robust might be able to test multiple ports to find the one sending the right strings, but this script does not do that at this point.
+
+# Acknowledgements
+
+- Most images courtesy of Google Maps
+- Aliens courtesy of Freepik: <a href="http://www.freepik.com">Designed by macrovector / Freepik</a>
